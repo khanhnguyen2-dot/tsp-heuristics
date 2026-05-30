@@ -1,64 +1,55 @@
 # Traveling Salesman Problem — A Heuristic Approach
 
-> **Group 4.4 · Class DS67B · National Economics University (NEU - College of Technology)**
-> **Supervisor:** Assoc. Prof., Dr. Hà Minh Hoàng
-> **Members:** Nguyễn Thị Ngọc Khánh · Chu Khánh Ly · Đặng Nguyễn Thảo My
-
-## Overview
-
-This project implements and empirically compares **four heuristic pipelines** for the Traveling Salesman Problem (TSP) on a benchmark suite of **eight TSPLIB instances** spanning four edge-weight conventions and instance sizes from 14 to 7,397 cities.
-
-| Stage | Main method | Reference method |
-|---|---|---|
-| Constructive | Farthest Insertion (FI) | Nearest Neighbor (NN) |
-| Local search | Swap (2-exchange) | 2-opt |
-
-The four resulting pipelines are **FI + Swap** (the assigned main pipeline), **FI + 2-opt**, **NN + Swap**, and **NN + 2-opt**.
-
-**Headline result.** Farthest Insertion + 2-opt is the strongest pipeline on six of the eight instances; on `d2103.tsp` the ranking inverts and NN-based pipelines win by more than fourteen percentage points — a structural anomaly that motivates the diverse benchmark suite.
+**Group 4.4** · Class **DS67B** · National Economics University (NEU – College of Technology)
+Members: **Nguyễn Thị Ngọc Khánh** · **Chu Khánh Ly** · **Đặng Nguyễn Thảo My**
+Supervisor: Assoc. Prof. Dr. **Hà Minh Hoàng** · Hanoi, May 2026
 
 ---
 
-## Project Structure
+## 1. Project Overview
+
+This project implements and empirically compares four heuristic pipelines for the Traveling Salesman Problem on a benchmark suite of **8 TSPLIB instances** spanning 14 to 7,397 cities and four edge-weight conventions (`EUC_2D`, `CEIL_2D`, `GEO`, `EXPLICIT`):
+
+| | **Swap** (local search) | **2-opt** (local search) |
+|---|---|---|
+| **Farthest Insertion** (constructive) | **FI + Swap** — assigned main pipeline | FI + 2-opt |
+| **Nearest Neighbor** (constructive) | NN + Swap | NN + 2-opt |
+
+**Headline result.** FI + 2-opt is the strongest pipeline on six of the eight instances. On `d2103.tsp` the ranking inverts and NN-based pipelines win by more than fourteen percentage points — an instance-specific anomaly that motivates the diverse benchmark suite.
+
+---
+
+## 2. Repository Layout
 
 ```
 tsp-heuristics/
 │
-├── README.md                              This file
-├── requirements.txt                       Required Python libraries
+├── README.md                              this file
+├── requirements.txt                       Python dependencies
 ├── LICENSE                                MIT
 │
 ├── code/
-│   └── project_discrete_maths.ipynb       Main notebook (single self-contained file)
+│   └── project_discrete_maths.ipynb       main self-contained notebook
 │
-├── datasets/                              8 TSPLIB benchmark instances
-│   ├── burma14.tsp                        14 cities,    GEO
-│   ├── gr17.tsp                           17 cities,    EXPLICIT
-│   ├── lin105.tsp                         105 cities,   EUC_2D
-│   ├── fl417.tsp                          417 cities,   EUC_2D
-│   ├── u574.tsp                           574 cities,   EUC_2D
-│   ├── pr1002.tsp                         1,002 cities, EUC_2D
-│   ├── d2103.tsp                          2,103 cities, EUC_2D
-│   └── pla7397.tsp                        7,397 cities, CEIL_2D
+├── datasets/                              8 TSPLIB instances
+│   ├── burma14.tsp     (14,    GEO)
+│   ├── gr17.tsp        (17,    EXPLICIT)
+│   ├── lin105.tsp      (105,   EUC_2D)
+│   ├── fl417.tsp       (417,   EUC_2D)
+│   ├── u574.tsp        (574,   EUC_2D)
+│   ├── pr1002.tsp      (1002,  EUC_2D)
+│   ├── d2103.tsp       (2103,  EUC_2D)
+│   └── pla7397.tsp     (7397,  CEIL_2D)
 │
 └── report/
-    └── report.pdf                         Full project report (36 pages)
+    └── report.pdf                         full 36-page report
 ```
 
 ---
 
-## Requirements
+## 3. Requirements
 
-- Python 3.8 or newer
-- Jupyter Notebook or Google Colab
-
-Install Python dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-The `requirements.txt` lists:
+Python 3.8 or newer, plus the libraries listed in `requirements.txt`:
 
 ```
 numpy
@@ -66,69 +57,66 @@ scipy
 matplotlib
 ```
 
----
+Install with:
 
-## How to Run
-
-### Option 1 — Local Jupyter Notebook
-
-1. Clone the repository and `cd` into it:
-   ```bash
-   git clone https://github.com/khanhnguyen2-dot/tsp-heuristics.git
-   cd tsp-heuristics
-   ```
-2. Install the dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Launch Jupyter and open the notebook:
-   ```bash
-   jupyter notebook code/project_discrete_maths.ipynb
-   ```
-4. In the first parameter cell, set the dataset path to point at the bundled `datasets/` folder:
-   ```python
-   DATASET_DIR = '../datasets/'        # because the notebook lives in code/
-   ```
-5. Run all cells in order (Cell → Run All).
-
-### Option 2 — Google Colab
-
-1. Upload the entire `tsp-heuristics/` folder to your Google Drive.
-2. Open `code/project_discrete_maths.ipynb` in Colab.
-3. Mount Google Drive when prompted.
-4. Update the `DATASET_DIR` variable to the path of the `datasets/` folder on your Drive, e.g.
-   ```python
-   DATASET_DIR = '/content/drive/MyDrive/tsp-heuristics/datasets/'
-   ```
-5. Run all cells in order.
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
-## Notebook Outline
+## 4. How to Reproduce
 
-The notebook is a single self-contained script organised in the order it should be executed:
+### 4.1. Local Jupyter
 
-1. **Setup** — imports, `DATASET_DIR`, `SEEDS`, and the 8 known optimal tour lengths.
-2. **Dataset Information** — summary statistics for every instance.
-3. **TSPLIB Parser** — `read_tsp()`.
-4. **Distance Matrix Construction** — `build_dist_matrix()`, supporting `EUC_2D`, `EUC_3D`, `CEIL_2D`, `MAN_2D`, `MAX_2D`, `GEO`, `ATT`, and `EXPLICIT` (with six storage formats).
-5. **Helpers** — `total_distance`, `is_valid_tour`, `calc_gap`.
-6. **Farthest Insertion** — `greedy_farthest_insertion()` with convex-hull multi-start.
-7. **Swap Local Search** — `swap_local_search()` with double-bridge restarts.
-8. **Validation & FI vs FI+Swap comparison table.**
-9. **Nearest Neighbor** — `nearest_neighbor()` multi-start.
-10. **2-opt Local Search** — `two_opt_local_search()` with double-bridge restarts.
-11. **Cross pairs (FI+2-opt, NN+Swap).**
-12. **Final validation & consolidated 4-pair benchmark table.**
-13. **Visualisation** — gap vs. instance size for all 4 pipelines.
+```bash
+git clone https://github.com/khanhnguyen2-dot/tsp-heuristics.git
+cd tsp-heuristics
+pip install -r requirements.txt
+jupyter notebook code/project_discrete_maths.ipynb
+```
 
-Total runtime on a Google Colab CPU runtime is approximately **20–25 minutes**, dominated by `pla7397.tsp`.
+Before running, set the first parameter cell:
+
+```python
+DATASET_DIR = '../datasets/'
+```
+
+Then run all cells in order (Cell → Run All). Total runtime is approximately **20–25 minutes** on a modern laptop, dominated by `pla7397.tsp`.
+
+### 4.2. Google Colab
+
+Upload the whole `tsp-heuristics/` folder to your Google Drive, open the notebook in Colab, mount Drive when prompted, and set:
+
+```python
+DATASET_DIR = '/content/drive/MyDrive/tsp-heuristics/datasets/'
+```
+
+Run all cells in order.
 
 ---
 
-## Expected Output
+## 5. Notebook Outline
 
-After running all cells, the final benchmark table prints the gap to optimum for every algorithm pair on every instance:
+The notebook is a single file organised in the order it should be executed:
+
+1. **Setup** — imports, `DATASET_DIR`, seeds, the 8 known optimal lengths.
+2. **TSPLIB parser** — `read_tsp()`.
+3. **Distance matrix** — `build_dist_matrix()` covers `EUC_2D`, `EUC_3D`, `CEIL_2D`, `MAN_2D`, `MAX_2D`, `GEO`, `ATT`, and `EXPLICIT` (six storage formats).
+4. **Helpers** — `total_distance`, `is_valid_tour`, `calc_gap`.
+5. **Farthest Insertion** — with convex-hull multi-start.
+6. **Swap local search** — with double-bridge perturbation and restarts.
+7. **Nearest Neighbor** — with multi-start.
+8. **2-opt local search** — with double-bridge restarts, adaptive neighbour list.
+9. **Cross pairs** — FI + 2-opt and NN + Swap.
+10. **Validation + final benchmark table.**
+11. **Visualization** — gap vs. instance size.
+
+---
+
+## 6. Expected Output
+
+The consolidated benchmark table at the end of the notebook prints:
 
 ```
 File             N    FI+Swap    FI+2opt    NN+Swap    NN+2opt       Best
@@ -142,40 +130,32 @@ d2103.tsp     2103   21.9229%    21.642%    7.3151%     7.028%     7.028%
 pla7397.tsp   7397   12.9524%   11.8125%   20.4109%   20.3119%   11.8125%
 ```
 
-A separate validation table confirms that every produced tour passes all three feasibility tests (length = N, no duplicates, valid city ids).
+A separate validation table confirms that every produced tour passes all three feasibility checks (length = N, no duplicates, valid city ids).
+
+**Reproducibility.** All stochastic components are seeded with `[11, 22, 33, 44, 55]` (5 seeds for `N ≤ 1000`, 3 seeds for `1000 < N ≤ 5000`, 1 seed for `N > 5000`). Running the notebook end-to-end on a fresh runtime reproduces the table above to the last decimal.
 
 ---
 
-## Reproducibility
+## 7. Data Source
 
-All stochastic components are seeded with values from `SEEDS = [11, 22, 33, 44, 55]`. The protocol is adapted to instance size:
-
-- 5 seeds for instances with `N <= 1000`
-- 3 seeds for `1000 < N <= 5000`
-- 1 seed (`[11]`) for `N > 5000`
-
-Running the notebook end-to-end on a fresh runtime with the same seeds reproduces the numbers above to the last decimal.
-
----
-
-## Dataset Source
-
-All eight benchmark instances are taken unchanged from the **TSPLIB** library:
+The eight benchmark instances are from the **TSPLIB** library:
 
 > Reinelt, G. (1991). *TSPLIB — A traveling salesman problem library.* ORSA Journal on Computing, 3(4), 376–384.
 
-Official site: <http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/>
+The specific `.tsp` files bundled in `datasets/` were downloaded from the GitHub mirror, which is the most reliable source at the time of writing (the original Heidelberg site is frequently unreachable):
 
-The best-known optimal tour lengths used to compute gaps (`OPTIMAL_VALUES` in the notebook) are taken from the TSPLIB best-known-solutions file.
+- **Primary source used in this project:** <https://github.com/mastqe/tsplib>
+
+The best-known optimal tour lengths used to compute gaps (the `OPTIMAL_VALUES` dictionary in the notebook) are taken from the same TSPLIB mirror.
 
 ---
 
-## Report
+## 8. Report
 
-The full report (`report/report.pdf`, 36 pages) presents the methodology, full Python code listings, experimental results, a critical discussion section (including the `d2103.tsp` anomaly), and lessons learned in algorithmic complexity and heuristic design. Readers interested in *why* the algorithms behave as they do should consult the report; this README only describes *how* to run the code.
+The full report is in `report/report.pdf` (36 pages). It contains the complete methodology, code listings, experimental results, a critical discussion of the `d2103.tsp` anomaly, lessons learned in algorithmic complexity and heuristic design, applications to logistics and supply chain, and future-work suggestions. This README only describes *how* to run the code.
 
 ---
 
 ## License
 
-Released under the MIT License. See `LICENSE` for details.
+MIT. See `LICENSE`.
